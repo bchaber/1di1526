@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  nginx:
+    image: chaberb/nginx-ssl
+    depends_on:
+      - app
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx-uwsgi.conf:/etc/nginx/nginx.conf
+
+  app:
+    image: chaberb/uwsgi-flask
+    depends_on:
+      - db
+    volumes:
+      - ./uwsgi.ini:/var/www/uwsgi.ini
+      - ./app:/var/www/app
+
+  db:
+    image: redis
