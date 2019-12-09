@@ -1,0 +1,10 @@
+<!doctype html>
+<head/>
+
+<ul>
+{% for msg in get_flashed_messages() %}
+ <li>{{ msg }}</li>
+{% endfor %}
+</ul>
+
+{{ content|safe }}

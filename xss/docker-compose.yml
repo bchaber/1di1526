@@ -11,7 +11,9 @@ services:
       - ./nginx-uwsgi.conf:/etc/nginx/nginx.conf
 
   app:
-    image: chaberb/uwsgi-flask
+    build: .
+    environment:
+      - DB=MongoDB
     depends_on:
       - db
     volumes:
@@ -19,4 +21,13 @@ services:
       - ./app:/var/www/app
 
   db:
-    image: redis
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+  #db:
+  #  image: mariadb
+  #  environment:
+  #    - MYSQL_ROOT_PASSWORD=root
+  #db:
+  #  image: redis
