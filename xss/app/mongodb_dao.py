@@ -30,7 +30,8 @@ class MongoDBDAO:
 
   def add_post(self, username, post):
     try:
-      self.db.posts.insert({'username':username, 'post':post})
+      index = 1
+      self.db.posts.insert({'username':username, 'post':post, 'id':index})
     except Exception as err:
       flask.flash(f"Database error: {err}")
 
