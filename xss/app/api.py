@@ -1,9 +1,9 @@
 from flask import Blueprint, request
 from .dao import dao
 
-app_api = Blueprint('app_api', __name__, template_folder='templates')
+api = Blueprint('api', __name__, template_folder='templates')
 
-@app_api.route('/api/post', methods=['GET'])
+@api.route('/post', methods=['GET'])
 def get_post():
   body = request.get_json()
   if body is None:

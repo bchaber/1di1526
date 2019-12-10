@@ -4,20 +4,20 @@ from flask import Blueprint
 from flask import request, make_response, render_template, url_for
 from .dao import dao
 
-app_auth = Blueprint('app_auth', __name__, template_folder='templates')
+auth = Blueprint('auth', __name__, template_folder='templates')
 
-@app_auth.route('/login')
+@auth.route('/login')
 def login():
   return render_template("index.html", content="""
-<form action="/auth" method="POST">
+<form action="/auth/" method="POST">
  <input type="text" name="username"></input>
  <input type="password" name="password"></input>
  <input type="submit"/>
 </form>
 """)
 
-@app_auth.route('/auth', methods=['POST'])
-def auth():
+@auth.route('/', methods=['POST'])
+def authorize():
   username = request.form.get('username')
   password = request.form.get('password')
   print(f"/auth {username}: {password}")
@@ -29,6 +29,6 @@ def auth():
   print(f"New session {session_id} for {username}")
   response = make_response('', 303)
   response.set_cookie("session_id", session_id, max_age=1800)
-  response.headers["Location"] = "/"
+  response.headers["Location"] = url_for("index")
 
   return response

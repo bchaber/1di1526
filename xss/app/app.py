@@ -1,11 +1,11 @@
 from flask import Flask
-from flask import request
+from flask import request, url_for
 from flask import make_response
 from flask import render_template
 from .dao import dao
-from .app_auth import app_auth
-from .app_api import app_api
-from .app_posts import app_posts
+from .api import api
+from .auth import auth
+from .posts import posts
 
 from time import sleep
 print("Waiting 10s for DB to start...")
@@ -14,9 +14,9 @@ print("...done")
 
 app = Flask(__name__)
 app.secret_key = 'deadbeef'
-app.register_blueprint(app_auth)
-app.register_blueprint(app_api)
-app.register_blueprint(app_posts)
+app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(auth, url_prefix='/auth')
+app.register_blueprint(posts, url_prefix='/posts')
 
 @app.route('/')
 def index():
@@ -24,7 +24,8 @@ def index():
   response = make_response('', 303)
   username = dao.get_username(session_id)
   print(f"/ username for {session_id} is {username}")
-  response.headers["Location"] = "/welcome" if username else "/login"
+  response.headers["Location"] = \
+    url_for("welcome" if username else "auth.login")
   return response
 
 @app.route('/welcome')
@@ -39,7 +40,7 @@ def welcome():
 Witaj {username}!
 Wiadomości: <ul><li>{posts}</li></ul>
 Ustaw wiadomość:
-<form action='/post' method='post'>
+<form action='/posts/' method='post'>
 <input type='text' name='post'/>
 <input type='submit'/>
 </form>
@@ -47,6 +48,6 @@ Ustaw wiadomość:
   else:
     response = make_response('', 303)
     response.set_cookie("session_id", "", max_age=-1)
-    response.headers["Location"] = "/login"
+    response.headers["Location"] = url_for("auth.login")
     print(f"/welcome removing session {session_id}")
     return response
