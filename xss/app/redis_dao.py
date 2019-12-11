@@ -2,6 +2,7 @@ from redis import Redis
 class RedisDAO:
   def __init__(self, hostname):
     self.db = Redis(hostname, decode_responses=True, charset="utf-8")
+    print("Connected to Redis")
 
   def get_username(self, sid):
     username = self.db.hget("session:" + sid, "username")

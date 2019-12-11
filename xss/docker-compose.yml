@@ -3,31 +3,60 @@ version: '3'
 services:
   nginx:
     image: chaberb/nginx-ssl
+    logging:
+      driver: none
     depends_on:
-      - app
+      - nosql
+      - sql
+      - kv
     ports:
       - "443:443"
     volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
       - ./nginx-uwsgi.conf:/etc/nginx/nginx.conf
 
-  app:
+  nosql:
     build: .
     environment:
-      - DB=MongoDB
+      - DB=mongodb
+      - PREFIX=/nosql
     depends_on:
-      - db
+      - mongodb
     volumes:
-      - ./uwsgi.ini:/var/www/uwsgi.ini
+      - ./app:/var/www/app
+  sql:
+    build: .
+    environment:
+      - DB=mariadb
+      - PREFIX=/sql
+    depends_on:
+      - mariadb
+    volumes:
+      - ./app:/var/www/app
+  kv:
+    build: .
+    environment:
+      - DB=redis
+      - PREFIX=/kv
+    depends_on:
+      - redis
+    volumes:
       - ./app:/var/www/app
 
-  db:
+  mongodb:
     image: mongo
+    logging:
+      driver: none
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
-  #db:
-  #  image: mariadb
-  #  environment:
-  #    - MYSQL_ROOT_PASSWORD=root
-  #db:
-  #  image: redis
+  mariadb:
+    image: mariadb
+    logging:
+      driver: none
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  redis:
+    image: redis
+    logging:
+      driver: none

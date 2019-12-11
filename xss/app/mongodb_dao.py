@@ -1,8 +1,18 @@
+import time
 import flask
 import pymongo
+
 class MongoDBDAO:
   def __init__(self, hostname):
-    self.db = pymongo.MongoClient('mongodb://root:root@'+hostname).db
+    db = None
+    while db is None:
+      try:
+        db = pymongo.MongoClient('mongodb://root:root@'+hostname).db
+      except Exception as err:
+        print(f"Error while connecting with MongoDB: {err}")
+      time.sleep(1)
+    print("Connected to MongoDB")
+    self.db = db
 
   def get_username(self, sid):
     try:
@@ -30,15 +40,18 @@ class MongoDBDAO:
 
   def add_post(self, username, post):
     try:
-      index = 1
+      counter = self.db.counters.find_and_modify({'name':'posts'}, 
+        {'$inc':{'value':1}}, new=True)
+      index = counter.get('value')
       self.db.posts.insert({'username':username, 'post':post, 'id':index})
+      print(f"Post id: {index}")
     except Exception as err:
       flask.flash(f"Database error: {err}")
 
   def get_posts(self, username):
     try:
       posts = self.db.posts.find({'username':username})
-      if posts == None:
+      if posts.count() == 0:
         return ["(nie masz postów)"]
       return [p.get('post') for p in posts]
     except Exception as err:

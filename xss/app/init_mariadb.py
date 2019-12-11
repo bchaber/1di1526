@@ -1,5 +1,5 @@
 import mysql.connector as mariadb
-db = mariadb.connect(host="db", user="root", password="root")
+db = mariadb.connect(host="mariadb", user="root", password="root")
 sql = db.cursor()
 sql.execute("DROP DATABASE IF EXISTS db;")
 sql.execute("CREATE DATABASE db;")
@@ -20,7 +20,6 @@ sql.execute("INSERT INTO session (sid, username) VALUES ('deadbeef', 'bach');")
 sql.execute("DROP TABLE IF EXISTS posts;")
 sql.execute("CREATE TABLE posts (id INT AUTO_INCREMENT, username VARCHAR(32), post VARCHAR(256), PRIMARY KEY(id));")
 sql.execute("DELETE FROM posts;")
-sql.execute("INSERT INTO posts (username, post) VALUES ('bach', 'Hello!');")
 db.commit()
 
 sql.execute("SELECT username FROM user;")

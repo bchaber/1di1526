@@ -1,3 +1,4 @@
+from os import getenv
 from flask import Flask
 from flask import request, url_for
 from flask import make_response
@@ -7,18 +8,14 @@ from .api import api
 from .auth import auth
 from .posts import posts
 
-from time import sleep
-print("Waiting 10s for DB to start...")
-sleep(10)
-print("...done")
-
+PREFIX = getenv('PREFIX','')
 app = Flask(__name__)
 app.secret_key = 'deadbeef'
-app.register_blueprint(api, url_prefix='/api')
-app.register_blueprint(auth, url_prefix='/auth')
-app.register_blueprint(posts, url_prefix='/posts')
+app.register_blueprint(api, url_prefix=PREFIX+'/api')
+app.register_blueprint(auth, url_prefix=PREFIX+'/auth')
+app.register_blueprint(posts, url_prefix=PREFIX+'/posts')
 
-@app.route('/')
+@app.route(PREFIX+'/')
 def index():
   session_id = request.cookies.get('session_id','')
   response = make_response('', 303)
@@ -28,7 +25,7 @@ def index():
     url_for("welcome" if username else "auth.login")
   return response
 
-@app.route('/welcome')
+@app.route(PREFIX+'/welcome')
 def welcome():
   session_id = request.cookies.get('session_id','')
   print(f"/welcome session {session_id}")
@@ -40,7 +37,7 @@ def welcome():
 Witaj {username}!
 Wiadomości: <ul><li>{posts}</li></ul>
 Ustaw wiadomość:
-<form action='/posts/' method='post'>
+<form action='{PREFIX}/posts/' method='post'>
 <input type='text' name='post'/>
 <input type='submit'/>
 </form>

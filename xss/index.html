@@ -1,0 +1,20 @@
+<!doctype html>
+<head/>
+
+<h1>Introduction</h1>
+<p>Below you have access to three, vulnerable applications.
+They differ in the data access layer. You can log-in to three users:
+`bach:haslo`, `john:snow` and `bob:bob`. After successful authentication
+each user is presented with a page showing a list of user's messages and
+a form for adding a new one. Try to fiddle with the form to see what can
+you make it do. In general, user can only add a message as themselves.
+But, there is an API endpoint for searching user's messages. The endpoint
+needs a username and a message identifier. The data can be provided either
+in a query string or in a request body (in JSON format).</p>
+
+<h1>Applications</h1>
+<ul>
+<li><a href="/kv">with Redis backend</a></li>
+<li><a href="/sql">with MySQL backend</a></li>
+<li><a href="/nosql">with MongoDB backend</a></li>
+</ul>

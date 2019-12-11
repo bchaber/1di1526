@@ -1,8 +1,21 @@
+import time
 import flask
 import mysql.connector as mariadb
 class MariaDBDAO:
   def __init__(self, hostname):
-    self.db = mariadb.connect(host=hostname,user="root",password="root")
+    db = None
+    while db is None:
+      try:
+        db = mariadb.connect(host=hostname,user="root",password="root")
+        sql = db.cursor()
+        sql.execute("USE mysql; SELECT 1", multi=True)
+        sql.fetchall()
+      except Exception as err:
+        print(f"Error while connecting with MariaDB: {err}")
+      time.sleep(3)
+    print("Connected to MariaDB")
+    self.db = db
+    # set buffered so that fetchone loads all rows but returns the first one
     self.sql = self.db.cursor(buffered=True)
     self.sql.execute("USE db")
 
@@ -17,6 +30,7 @@ class MariaDBDAO:
 
   def get_password(self, username):
     try:
+      print(f"SELECT password FROM user WHERE username = '{username}'")
       self.sql.execute(f"SELECT password FROM user WHERE username = '{username}'")
       password, = self.sql.fetchone() or (None,)
       return password

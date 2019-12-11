@@ -8,8 +8,9 @@ auth = Blueprint('auth', __name__, template_folder='templates')
 
 @auth.route('/login')
 def login():
-  return render_template("index.html", content="""
-<form action="/auth/" method="POST">
+  auth_url = url_for(".authorize")
+  return render_template("index.html", content=f"""
+<form action="{auth_url}" method="POST">
  <input type="text" name="username"></input>
  <input type="password" name="password"></input>
  <input type="submit"/>
