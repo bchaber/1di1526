@@ -11,6 +11,8 @@ sql.execute("DELETE FROM user;")
 sql.execute("INSERT INTO user (username, password) VALUES ('bach', 'haslo');")
 sql.execute("INSERT INTO user (username, password) VALUES ('john', 'snow');")
 sql.execute("INSERT INTO user (username, password) VALUES ('bob', 'bob');")
+for i in range(1,30):
+  sql.execute(f"INSERT INTO user (username, password) VALUES ('user{i}', 'pass');")
 
 sql.execute("DROP TABLE IF EXISTS session;")
 sql.execute("CREATE TABLE session (sid VARCHAR(32), username VARCHAR(32), PRIMARY KEY(sid));")
