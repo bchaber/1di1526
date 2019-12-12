@@ -21,8 +21,8 @@ sql.execute("INSERT INTO session (sid, username) VALUES ('deadbeef', 'bach');")
 
 sql.execute("DROP TABLE IF EXISTS posts;")
 sql.execute("CREATE TABLE posts (id INT AUTO_INCREMENT, username VARCHAR(32), post VARCHAR(256), PRIMARY KEY(id));")
-sql.execute("INSERT INTO posts (username, post, id) VALUES ('bach', 'To jest sekret!', 1);")
 sql.execute("DELETE FROM posts;")
+sql.execute("INSERT INTO posts (username, post, id) VALUES ('bob', 'To jest sekret!', 1);")
 db.commit()
 
 sql.execute("SELECT username FROM user;")
