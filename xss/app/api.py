@@ -7,10 +7,11 @@ api = Blueprint('api', __name__, template_folder='templates')
 def get_post():
   body = request.get_json()
   if body is None:
-    body = {}
-    body['username'] = request.args.get('username')
-    body['index'] = int(request.args.get('index','0'))
+    body = request.args
   print(f"/api/post {body}")
+  password = dao.get_password(body.get('username'))
+  if password != body.get('password'):
+    return "Forbidden", 403
   post = dao.get_post(body.get('username'), body.get('index'))
   if post is None:
     return "Nothing", 404
