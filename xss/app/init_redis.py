@@ -6,4 +6,4 @@ db.set("user:john", "snow")
 db.set("user:bob",  "bob")
 for i in range(1,30):
     db.set(f"user:user{i}", "pass")
-self.db.lpush("posts:bach" , "To jest sekret!")
+db.lpush("posts:bach" , "To jest sekret!")
