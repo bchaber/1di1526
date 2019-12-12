@@ -3,18 +3,56 @@
 
 <h1>Introduction</h1>
 <p>Below you have access to three, vulnerable applications.
-They differ in the data access layer. You can log-in to three users:
-`bach:haslo`, `john:snow` and `bob:bob`. After successful authentication
+They differ in the data access layer. There are some user accounts prepared:
+<ul>
+    <li>`bach:haslo`</li>
+    <li>`john:snow`</li>
+    <li>`bob:bob`</li>
+    <li>`user*:pass` where `*` is from `1` to `29`</li>
+</ul>
+</p>
+
+<p>After successful authentication
 each user is presented with a page showing a list of user's messages and
 a form for adding a new one. Try to fiddle with the form to see what can
-you make it do. In general, user can only add a message as themselves.
-But, there is an API endpoint for searching user's messages. The endpoint
-needs a username and a message identifier. The data can be provided either
-in a query string or in a request body (in JSON format).</p>
+you make it do. In general, user can only add a message as themselves. But
+is it so? Try it!
+
+There is also an API endpoint for searching user's messages: api/post
+The endpoint needs a username, a password and a message identifier (index).
+The data can be provided either in a query string or in a request body
+(in JSON format). If the username/password pair is incorrect it will result
+in `Forbidden` response. If the correctly authenticated user has no message
+with the provided identifier (index), the response is `Nothing`. It DOES NOT
+mean that NO OTHER user has a message with this identifier. Message identifiers
+are unique in the whole table and are not visible at the moment in the application.
+So you can try guessing.</p>
 
 <h1>Applications</h1>
 <ul>
 <li><a href="/kv">with Redis backend</a></li>
 <li><a href="/sql">with MySQL backend</a></li>
 <li><a href="/nosql">with MongoDB backend</a></li>
+</ul>
+
+<h1>Endpoints</h1>
+Each application has the same number of endpoints:
+<ul>
+    <li> /&lt;app&gt;/auth/ [POST] [form-data]
+        receives the form data from the login form and then redirects the user,
+        returning a cookie with a session identifier;
+    </li>
+    <li> /&lt;app&gt;/auth/login [GET]
+        presents a login form;
+    </li>
+    <li> /&lt;app&gt;/posts/ [POST]
+        save the post message for the currently logged user;
+    </li>
+    <li> /&lt;app&gt;/api/post [GET] [url-encoded, json]
+        returns the post owned by the user identified by the username/pair provided;
+        if the username/password pair is invalid, `Forbidden` is returned;
+        if the correct user has no message with the given index, `Nothing` is returned;
+
+        Example: GET /&lt;app&gt;/api/post?username=bach&password=haslo&index=1
+    </li>
 </ul>
