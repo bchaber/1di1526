@@ -54,7 +54,7 @@ class MariaDBDAO:
 
   def get_posts(self, username):
     try:
-      self.sql.execute(f"SELECT post FROM posts WHERE username = '{username}'")
+      self.sql.execute(f"SELECT post FROM posts WHERE username = '{username}' ORDER BY id DESC")
       posts = self.sql.fetchmany(size=4)
       if len(posts) == 0:
         return ["(nie masz postów)"]

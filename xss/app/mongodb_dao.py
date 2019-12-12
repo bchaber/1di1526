@@ -2,6 +2,7 @@ import time
 import flask
 import pymongo
 
+DESC = pymongo.DESCENDING
 class MongoDBDAO:
   def __init__(self, hostname):
     db = None
@@ -50,7 +51,7 @@ class MongoDBDAO:
 
   def get_posts(self, username):
     try:
-      posts = self.db.posts.find({'username':username})
+      posts = self.db.posts.find({'username':username}).sort('id',DESC).limit(4)
       if posts.count() == 0:
         return ["(nie masz postów)"]
       return [p.get('post') for p in posts]
