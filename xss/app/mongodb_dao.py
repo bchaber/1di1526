@@ -4,17 +4,30 @@ import pymongo
 
 DESC = pymongo.DESCENDING
 class MongoDBDAO:
-  def __init__(self, hostname):
-    db = None
-    while db is None:
-      try:
-        db = pymongo.MongoClient('mongodb://root:root@'+hostname).db
-      except Exception as err:
-        print(f"Error while connecting with MongoDB: {err}")
+  def connect(self, hostname, username, password):
+    try:
+      db = pymongo.MongoClient(f'mongodb://{username}:{password}@{hostname}').db
+      return db
+    except Exception as err:
+      print(f"Error while connecting with MongoDB: {err}")
       time.sleep(1)
-    print("Connected to MongoDB")
-    self.db = db
+      return None
+  
+  def test_database(self):
+    try:
+      return self.db.user.find({}).count()
+    except Exception as err:
+      print(f"Error while testing collections: {err}")
+      time.sleep(1)
+      return None
 
+  def __init__(self, hostname):
+    self.db = self.connect(hostname, "root", "root")
+    if not self.test_database():
+      print(f"Initiating collections")
+      import app.init_mongodb
+    print("Connected to MongoDB")
+    
   def get_username(self, sid):
     try:
       result = self.db.session.find_one({'sid':sid})

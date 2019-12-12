@@ -2,23 +2,42 @@ import time
 import flask
 import mysql.connector as mariadb
 class MariaDBDAO:
-  def __init__(self, hostname):
-    db = None
-    while db is None:
-      try:
-        db = mariadb.connect(host=hostname,user="root",password="root")
-        sql = db.cursor()
-        sql.execute("USE mysql; SELECT 1", multi=True)
-        sql.fetchall()
-      except Exception as err:
-        print(f"Error while connecting with MariaDB: {err}")
+  def connect(self, host, user, password):
+    try:
+      db = mariadb.connect(host=host,user="root",password="root")
+      sql = db.cursor(buffered=True)
+      sql.execute("USE mysql")
+      sql.execute("SELECT 1")
+      sql.fetchall()
+      return db
+    except Exception as err:
+      print(f"Error while connecting with MariaDB: {err}")
       time.sleep(3)
-    print("Connected to MariaDB")
-    self.db = db
-    # set buffered so that fetchone loads all rows but returns the first one
-    self.sql = self.db.cursor(buffered=True)
-    self.sql.execute("USE db")
+      return None
+  
+  def choose_database(self, database):
+    try:
+      sql = self.db.cursor(buffered=True)
+      sql.execute(f"USE {database}")
+      sql.execute("SELECT 1")
+      sql.fetchall()
+      return sql
+    except Exception as err:
+      print(f"Error while choosing DB with MariaDB: {err}")
+      print(f"Initiating database")
+      import app.init_mariadb
+      time.sleep(3)
+      return None
 
+  def __init__(self, hostname):
+    self.db = None
+    self.sql = None
+    while self.db is None:
+      self.db = self.connect(hostname, "root", "root")
+    while self.sql is None:
+      self.sql = self.choose_database("db")
+    print("Connected to MariaDB")
+    
   def get_username(self, sid):
     try:
       self.sql.execute(f"SELECT username FROM session WHERE sid = '{sid}'")

@@ -1,7 +1,16 @@
 from redis import Redis
 class RedisDAO:
+  def connect(self, hostname):
+    return Redis(hostname, decode_responses=True, charset="utf-8")
+  
+  def test_database(self):
+    return self.db.dbsize() > 0
+
   def __init__(self, hostname):
-    self.db = Redis(hostname, decode_responses=True, charset="utf-8")
+    self.db = self.connect(hostname)
+    if not self.test_database():
+      print(f"Initiating database")
+      import app.init_redis
     print("Connected to Redis")
 
   def get_username(self, sid):
