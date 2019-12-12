@@ -11,6 +11,7 @@ for i in range(1,30):
 db.session.remove({})
 db.session.insert({'sid':'deadbeef', 'username':'bach'})
 db.posts.remove({})
+db.posts.insert({'username':'bach', 'post':'To jest sekret!', 'id':1})
 
 for u in db.user.find():
   print(u)
