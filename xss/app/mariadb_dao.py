@@ -2,6 +2,11 @@ import time
 import flask
 import mysql.connector as mariadb
 class MariaDBDAO:
+  def deny_semicolon(self, *args):
+    for arg in args:
+      if ';' in arg:
+        raise mariadb.InterfaceError("Multiple statements are forbidden")
+
   def connect(self, host, user, password):
     try:
       db = mariadb.connect(host=host,user="root",password="root")
@@ -40,25 +45,28 @@ class MariaDBDAO:
     
   def get_username(self, sid):
     try:
+      self.deny_semicolon(sid)
       self.sql.execute(f"SELECT username FROM session WHERE sid = '{sid}'")
       username, = self.sql.fetchone() or (None,)
       return username
     except mariadb.Error as err:
       flask.flash(f"Database error: {err}")
-      return None
+    return None
 
   def get_password(self, username):
     try:
+      self.deny_semicolon(username)
       print(f"SELECT password FROM user WHERE username = '{username}'")
       self.sql.execute(f"SELECT password FROM user WHERE username = '{username}'")
       password, = self.sql.fetchone() or (None,)
       return password
     except mariadb.Error as err:
       flask.flash(f"Database error: {err}")
-      return None
+    return None
 
   def set_session(self, sid, username):
     try:
+      self.deny_semicolon(sid, username)
       self.sql.execute(f"INSERT INTO session (sid, username) VALUES ('{sid}', '{username}')")
       self.db.commit()
     except mariadb.Error as err:
@@ -66,6 +74,7 @@ class MariaDBDAO:
 
   def add_post(self, username, post):
     try:
+      self.deny_semicolon(username, post)
       self.sql.execute(f"INSERT INTO posts (username, post) VALUES ('{username}', '{post}')")
       self.db.commit()
     except mariadb.Error as err:
@@ -73,6 +82,7 @@ class MariaDBDAO:
 
   def get_posts(self, username):
     try:
+      self.deny_semicolon(username)
       self.sql.execute(f"SELECT post FROM posts WHERE username = '{username}' ORDER BY id DESC")
       posts = self.sql.fetchmany(size=4)
       if len(posts) == 0:
@@ -80,13 +90,14 @@ class MariaDBDAO:
       return [post for post, in posts]
     except mariadb.Error as err:
       flask.flash(f"Database error: {err}")
-      return []
+    return []
 
   def get_post(self, username, index):
     try:
+      self.deny_semicolon(username, index)
       self.sql.execute(f"SELECT post FROM posts WHERE username = '{username}' AND id = {index}")
       post, = self.sql.fetchone() or (None,)
       return post
     except mariadb.Error as err:
       flask.flash(f"Database error: {err}")
-      return None
+    return None
