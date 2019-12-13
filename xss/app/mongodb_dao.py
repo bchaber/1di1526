@@ -22,7 +22,9 @@ class MongoDBDAO:
       return None
 
   def __init__(self, hostname):
-    self.db = self.connect(hostname, "root", "root")
+    self.db = None
+    while self.db is None:
+      self.db = self.connect(hostname, "root", "root")
     if not self.test_database():
       print(f"Initiating collections")
       import app.init_mongodb
