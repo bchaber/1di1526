@@ -30,7 +30,7 @@ Witaj {username}!
 Wiadomości: <ul><li>{posts}</li></ul>
 Ustaw wiadomość:
 <form action='{new_post_url}' method='post'>
-<input type='text' name='post'/>
+<input type='text' name='post' placeholder='text to be posted'/>
 <input type='submit'/>
 </form>
 """), 200
