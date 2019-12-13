@@ -13,7 +13,7 @@ def new_post():
     post = request.form.get('post')
     dao.add_post(username, post)
     print(f"/post added new post for {username}/{session_id}")
-    response.headers["Location"] = url_for("welcome")
+    response.headers["Location"] = url_for("bp.welcome")
   else:
     response.headers["Location"] = url_for("auth.login")
   return response

@@ -30,6 +30,6 @@ def authorize():
   print(f"New session {session_id} for {username}")
   response = make_response('', 303)
   response.set_cookie("session_id", session_id, max_age=1800)
-  response.headers["Location"] = url_for("index")
+  response.headers["Location"] = url_for("bp.index")
 
   return response
