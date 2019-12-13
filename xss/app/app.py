@@ -1,9 +1,7 @@
 from os import getenv
 from flask import Flask
-from flask import request, url_for
-from flask import make_response
-from flask import render_template
 from .dao import dao
+from .bp import bp
 from .api import api
 from .auth import auth
 from .posts import posts
@@ -11,40 +9,7 @@ from .posts import posts
 PREFIX = getenv('PREFIX','')
 app = Flask(__name__)
 app.secret_key = 'deadbeef'
+app.register_blueprint(bp, url_prefix=PREFIX)
 app.register_blueprint(api, url_prefix=PREFIX+'/api')
 app.register_blueprint(auth, url_prefix=PREFIX+'/auth')
 app.register_blueprint(posts, url_prefix=PREFIX+'/posts')
-
-@app.route(PREFIX+'/')
-def index():
-  session_id = request.cookies.get('session_id','')
-  response = make_response('', 303)
-  username = dao.get_username(session_id)
-  print(f"/ username for {session_id} is {username}")
-  response.headers["Location"] = \
-    url_for("welcome" if username else "auth.login")
-  return response
-
-@app.route(PREFIX+'/welcome')
-def welcome():
-  session_id = request.cookies.get('session_id','')
-  print(f"/welcome session {session_id}")
-  username = dao.get_username(session_id)
-  if username:
-    posts = dao.get_posts(username)
-    posts = '</li><li>'.join(posts)
-    return render_template("index.html", content=f"""
-Witaj {username}!
-Wiadomości: <ul><li>{posts}</li></ul>
-Ustaw wiadomość:
-<form action='{PREFIX}/posts/' method='post'>
-<input type='text' name='post'/>
-<input type='submit'/>
-</form>
-"""), 200
-  else:
-    response = make_response('', 303)
-    response.set_cookie("session_id", "", max_age=-1)
-    response.headers["Location"] = url_for("auth.login")
-    print(f"/welcome removing session {session_id}")
-    return response
