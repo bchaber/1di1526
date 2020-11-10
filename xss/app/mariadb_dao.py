@@ -4,6 +4,8 @@ import mysql.connector as mariadb
 class MariaDBDAO:
   def deny_semicolon(self, *args):
     for arg in args:
+      if not isinstance(arg, str):
+        continue
       if ';' in arg:
         raise mariadb.InterfaceError("Multiple statements are forbidden")
 
