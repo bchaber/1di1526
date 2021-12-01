@@ -16,7 +16,7 @@ services:
       - ./nginx-uwsgi.conf:/etc/nginx/nginx.conf
 
   nosql:
-    build: .
+    build: uwsgi-flask
     environment:
       - DB=mongodb
       - PREFIX=/nosql
@@ -25,7 +25,7 @@ services:
     volumes:
       - ./app:/var/www/app
   sql:
-    build: .
+    build: uwsgi-flask
     environment:
       - DB=mariadb
       - PREFIX=/sql
@@ -34,7 +34,7 @@ services:
     volumes:
       - ./app:/var/www/app
   kv:
-    build: .
+    build: uwsgi-flask
     environment:
       - DB=redis
       - PREFIX=/kv
